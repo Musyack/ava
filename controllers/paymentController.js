@@ -5,9 +5,7 @@ class PaymentController {
 
     async create (req, res, next){
         const {amount} = req.body
-        let formData = new FormData()
-        formData.append('amount', amount);
-        formData.append('shop_id', '207');
+
         const orderId  = uuidv4()
 
         formData.append('token', token)

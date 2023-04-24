@@ -40,6 +40,65 @@ class UserController {
         return res.json({token, user})
     }
 
+    async updateBalance(req, res, next) {
+        const {email, balance} = req.body
+        const user = await User.findOne({where: {email}})
+
+        if (!user) {
+            return next(ApiError.internal('Пользователь не найден'))
+        }
+        const newBalance = parseInt(balance)
+        console.log(newBalance)
+        const current = user.dataValues.balance
+        console.log(current)
+        const total = newBalance + current
+        console.log(total)
+        await user.update({balance: total})
+
+        await user.save()
+
+        return res.json({total})
+    }
+
+
+    async updateBalance(req, res, next) {
+        const {email, balance} = req.body
+        const user = await User.findOne({where: {email}})
+
+        if (!user) {
+            return next(ApiError.internal('Пользователь не найден'))
+        }
+        const newBalance = parseInt(balance)
+        // console.log(newBalance)
+        const current = user.dataValues.balance
+        // console.log(current)
+
+        const total = newBalance + current
+        if (newBalance < 0){
+            if (total < 0){
+                return next(ApiError.internal('Не хватает средств для пополнения'))
+            }
+        }
+        // console.log(total)
+        await user.update({balance: total})
+
+        await user.save()
+
+        return res.json({total})
+    }
+
+    async getUser(req, res, next) {
+        const {email} = req.body
+        const user = await User.findOne({where: {email}})
+
+        if (!user) {
+            return next(ApiError.internal('Пользователь не найден'))
+        }
+
+
+        return res.json({user})
+    }
+
     async check(req, res, next) {
         const token = generateJwt(req.user.id, req.user.email)
         return res.json({token})
